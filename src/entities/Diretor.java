@@ -44,9 +44,8 @@ public class Diretor implements Serializable {
     }
     @Override
     public String toString() {
-        return "id=" + id +
-                ", nome=" + nome + '\'' +
-                ", id_filme=" + idFilme
-                ;
+        return  nome;
+
+
     }
 }

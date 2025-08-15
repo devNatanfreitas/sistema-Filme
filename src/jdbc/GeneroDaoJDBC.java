@@ -21,7 +21,7 @@ public class GeneroDaoJDBC implements GeneroDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "INSERT INTO genero (nome,id_filme) VALUES (?,?)",
+                    "INSERT INTO generos (nome,id_filme) VALUES (?,?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             st.setString(1, genero.getNome());
@@ -40,7 +40,7 @@ public class GeneroDaoJDBC implements GeneroDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "UPDATE genero SET nome = ?, id_filme = ? WHERE id = ?"
+                    "UPDATE generos SET nome = ?, id_filme = ? WHERE id = ?"
             );
             st.setString(1, genero.getNome());
             st.setInt(2, genero.getId());
@@ -58,7 +58,7 @@ public class GeneroDaoJDBC implements GeneroDao {
     public void deleteById(Integer id) {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement("DELETE FROM genero WHERE id = ?");
+            st = conn.prepareStatement("DELETE FROM generos WHERE id = ?");
             st.setInt(1, id);
             int rows = st.executeUpdate();
             System.out.println(rows);
@@ -74,7 +74,7 @@ public class GeneroDaoJDBC implements GeneroDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT g.* FROM genero g WHERE g.id = ?");
+            st = conn.prepareStatement("SELECT g.* FROM generos g WHERE g.id = ?");
             st.setInt(1, id);
             rs = st.executeQuery();
             if (rs.next()) {
@@ -99,7 +99,7 @@ public class GeneroDaoJDBC implements GeneroDao {
         ResultSet rs = null;
         List<Genero> list = new ArrayList<>();
         try {
-            st = conn.prepareStatement("SELECT * FROM genero");
+            st = conn.prepareStatement("SELECT * FROM generos");
             rs = st.executeQuery();
 
             while (rs.next()) {

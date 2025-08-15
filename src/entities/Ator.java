@@ -45,8 +45,6 @@ public class Ator implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", id_filme=" + idFilme;
+        return nome;
     }
 }

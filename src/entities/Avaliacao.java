@@ -6,10 +6,11 @@ public class Avaliacao implements Serializable {
     private int id;
     private int idUsuario;
     private int idFilme;
-    private int nota;
+    private int nota; // MUDANÇA: de String para int
     private String comentario;
 
     public Avaliacao() {}
+
 
     public Avaliacao(int id, int idUsuario, int idFilme, int nota, String comentario) {
         this.id = id;
@@ -25,52 +26,21 @@ public class Avaliacao implements Serializable {
         this.comentario = comentario;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+    public int getIdFilme() { return idFilme; }
+    public void setIdFilme(int idFilme) { this.idFilme = idFilme; }
+    public String getComentario() { return comentario; }
+    public void setComentario(String comentario) { this.comentario = comentario; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public int getIdFilme() {
-        return idFilme;
-    }
-
-    public void setIdFilme(int idFilme) {
-        this.idFilme = idFilme;
-    }
-
-    public int getNota() {
-        return nota;
-    }
-
-    public void setNota(int nota) {
-        this.nota = nota;
-    }
-
-    public String getComentario() {
-        return comentario;
-    }
-
-    public void setComentario(String comentario) {
-        this.comentario = comentario;
-    }
+    // Getters e Setters atualizados para a nota
+    public int getNota() { return nota; }
+    public void setNota(int nota) { this.nota = nota; }
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", id_usuario=" + idUsuario +
-                ", id_filme=" + idFilme +
-                ", nota=" + nota +
-                ", comentario='" + comentario;
+        return "Nota: " + nota + " | " + comentario; // toString mais descritivo
     }
 }

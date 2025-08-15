@@ -23,7 +23,7 @@ public class FilmeDaoJDBC implements FilmeDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "INSERT INTO filme (titulo, duracao, ano_lancamento) VALUES (?, ?, ?)",
+                    "INSERT INTO filmes (titulo, duracao, ano_lancamento) VALUES (?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             st.setString(1, filme.getTitulo());
@@ -45,7 +45,7 @@ public class FilmeDaoJDBC implements FilmeDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "UPDATE filme SET titulo = ?, duracao = ?, ano_lancamento = ? WHERE id = ?"
+                    "UPDATE filmes SET titulo = ?, duracao = ?, ano_lancamento = ? WHERE id = ?"
             );
             st.setString(1, filme.getTitulo());
             st.setInt(2, filme.getDuracao());
@@ -64,7 +64,7 @@ public class FilmeDaoJDBC implements FilmeDao {
     public void deleteById(Integer id) {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement("delete from filme where id = ?");
+            st = conn.prepareStatement("delete from filmes where id = ?");
             st.setInt(1, id);
             int rows = st.executeUpdate();
             System.out.println(rows);
@@ -80,7 +80,7 @@ public class FilmeDaoJDBC implements FilmeDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT f.* FROM filme f WHERE f.id = ?");
+            st = conn.prepareStatement("SELECT f.* FROM filmes f WHERE f.id = ?");
             st.setInt(1, id);
             rs = st.executeQuery();
             if (rs.next()) {
@@ -107,7 +107,7 @@ public class FilmeDaoJDBC implements FilmeDao {
         ResultSet rs = null;
         List<Filme> list = new ArrayList<>();
         try {
-            st = conn.prepareStatement("SELECT * FROM filme");
+            st = conn.prepareStatement("SELECT * FROM filmes");
             rs = st.executeQuery();
 
             while (rs.next()) {

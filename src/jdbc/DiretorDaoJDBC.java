@@ -21,7 +21,7 @@ public class DiretorDaoJDBC implements DiretorDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "INSERT INTO diretor (nome, id_filme) VALUES (?, ?)",
+                    "INSERT INTO diretores (nome, id_filme) VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             st.setString(1, diretor.getNome());
@@ -41,7 +41,7 @@ public class DiretorDaoJDBC implements DiretorDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "UPDATE diretor SET nome = ?, id_filme = ? WHERE id = ?"
+                    "UPDATE diretores SET nome = ?, id_filme = ? WHERE id = ?"
             );
             st.setString(1, diretor.getNome());
             st.setInt(2, diretor.getIdFilme());
@@ -60,7 +60,7 @@ public class DiretorDaoJDBC implements DiretorDao {
     public void deleteById(Integer id) {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement("DELETE FROM diretor WHERE id = ?");
+            st = conn.prepareStatement("DELETE FROM diretores WHERE id = ?");
             st.setInt(1, id);
 
             int rows = st.executeUpdate();
@@ -77,7 +77,7 @@ public class DiretorDaoJDBC implements DiretorDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT * FROM diretor WHERE id = ?");
+            st = conn.prepareStatement("SELECT * FROM diretores WHERE id = ?");
             st.setInt(1, id);
             rs = st.executeQuery();
             if (rs.next()) {
@@ -101,7 +101,7 @@ public class DiretorDaoJDBC implements DiretorDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT * FROM diretor");
+            st = conn.prepareStatement("SELECT * FROM diretores");
             rs = st.executeQuery();
 
             List<Diretor> list = new ArrayList<>();
