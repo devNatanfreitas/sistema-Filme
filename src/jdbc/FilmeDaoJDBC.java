@@ -1,6 +1,5 @@
 package jdbc;
 
-import db.DB;
 import db.DbException;
 import entities.Filme;
 import entities.dao.FilmeDao;
@@ -12,12 +11,10 @@ import java.util.List;
 public class FilmeDaoJDBC implements FilmeDao {
     private Connection conn;
 
-    public FilmeDaoJDBC(Connection conn){
+    public FilmeDaoJDBC(Connection conn) {
         this.conn = conn;
     }
-    public FilmeDaoJDBC(){
 
-    }
     @Override
     public void insert(Filme filme) {
         PreparedStatement st = null;
@@ -30,14 +27,25 @@ public class FilmeDaoJDBC implements FilmeDao {
             st.setInt(2, filme.getDuracao());
             st.setInt(3, filme.getAnoLancamento());
 
-            int rows =  st.executeUpdate();
-            System.out.println(rows);
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
-        }
+            int rowsAffected = st.executeUpdate();
 
+            if (rowsAffected > 0) {
+                ResultSet rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    int id = rs.getInt(1);
+                    filme.setId(id);
+                }
+                if (rs != null) rs.close();
+            } else {
+                throw new DbException("Erro inesperado! Nenhuma linha afetada.");
+            }
+        } catch (SQLException e) {
+            throw new DbException("Erro ao inserir filme: " + e.getMessage());
+        } finally {
+            if (st != null) {
+                try { st.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        }
     }
 
     @Override
@@ -51,12 +59,14 @@ public class FilmeDaoJDBC implements FilmeDao {
             st.setInt(2, filme.getDuracao());
             st.setInt(3, filme.getAnoLancamento());
             st.setInt(4, filme.getId());
-            int rows =  st.executeUpdate();
-            System.out.println(rows);
+
+            st.executeUpdate();
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }finally {
-            DB.closeStatement(st);
+            throw new DbException("Erro ao atualizar filme: " + e.getMessage());
+        } finally {
+            if (st != null) {
+                try { st.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -64,14 +74,15 @@ public class FilmeDaoJDBC implements FilmeDao {
     public void deleteById(Integer id) {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement("delete from filmes where id = ?");
+            st = conn.prepareStatement("DELETE FROM filmes WHERE id = ?");
             st.setInt(1, id);
-            int rows = st.executeUpdate();
-            System.out.println(rows);
-        }catch (SQLException e){
-            throw new DbException(e.getMessage());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            throw new DbException("Erro ao deletar filme: " + e.getMessage());
         } finally {
-            DB.closeStatement(st);
+            if (st != null) {
+                try { st.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -80,51 +91,57 @@ public class FilmeDaoJDBC implements FilmeDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            st = conn.prepareStatement("SELECT f.* FROM filmes f WHERE f.id = ?");
+            st = conn.prepareStatement("SELECT * FROM filmes WHERE id = ?");
             st.setInt(1, id);
             rs = st.executeQuery();
-            if (rs.next()) {
-                Filme filme = new Filme();
-                filme.setId(rs.getInt("id"));
-                filme.setTitulo(rs.getString("titulo"));
-                filme.setDuracao(rs.getInt("duracao"));
-                filme.setAnoLancamento(rs.getInt("ano_lancamento"));
-                return filme;
-            }
 
+            if (rs.next()) {
+                return instantiateFilme(rs);
+            }
+            return null;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DbException("Erro ao buscar filme por ID: " + e.getMessage());
         } finally {
-            DB.closeResultSet(rs);
-            DB.closeStatement(st);
+            if (rs != null) {
+                try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (st != null) {
+                try { st.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
-        return null;
     }
 
     @Override
     public List<Filme> findAll() {
         PreparedStatement st = null;
         ResultSet rs = null;
-        List<Filme> list = new ArrayList<>();
         try {
-            st = conn.prepareStatement("SELECT * FROM filmes");
+            st = conn.prepareStatement("SELECT * FROM filmes ORDER BY titulo");
             rs = st.executeQuery();
 
+            List<Filme> list = new ArrayList<>();
             while (rs.next()) {
-                Filme filme = new Filme();
-                filme.setId(rs.getInt("id"));
-                filme.setTitulo(rs.getString("titulo"));
-                filme.setDuracao(rs.getInt("duracao"));
-                filme.setAnoLancamento(rs.getInt("ano_lancamento"));
-                list.add(filme);
+                list.add(instantiateFilme(rs));
             }
             return list;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DbException("Erro ao buscar todos os filmes: " + e.getMessage());
         } finally {
-            DB.closeResultSet(rs);
-            DB.closeStatement(st);
+            if (rs != null) {
+                try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (st != null) {
+                try { st.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
-        return null;
+    }
+
+    private Filme instantiateFilme(ResultSet rs) throws SQLException {
+        Filme filme = new Filme();
+        filme.setId(rs.getInt("id"));
+        filme.setTitulo(rs.getString("titulo"));
+        filme.setDuracao(rs.getInt("duracao"));
+        filme.setAnoLancamento(rs.getInt("ano_lancamento"));
+        return filme;
     }
 }

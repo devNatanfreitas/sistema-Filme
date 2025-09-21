@@ -1,7 +1,6 @@
 package entities.dao;
 
 import entities.Filme;
-
 import java.util.List;
 
 public interface FilmeDao {
@@ -11,3 +10,4 @@ public interface FilmeDao {
     Filme findById(Integer id);
     List<Filme> findAll();
 }
+

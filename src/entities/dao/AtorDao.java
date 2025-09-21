@@ -1,7 +1,6 @@
 package entities.dao;
 
 import entities.Ator;
-
 import java.util.List;
 
 public interface AtorDao {

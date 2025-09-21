@@ -22,10 +22,10 @@ public class AvaliacaoDaoJDBC implements AvaliacaoDao {
         try {
             // CORREÇÃO: "avaliacoes" (plural)
             st = conn.prepareStatement(
-                    "INSERT INTO avaliacoes (id_usuario, id_filme, nota, comentario) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO avaliacoes (nome_avaliador, id_filme, nota, comentario) VALUES (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
-            st.setInt(1, avaliacao.getIdUsuario());
+            st.setString(1, avaliacao.getNomeAvaliador());
             st.setInt(2, avaliacao.getIdFilme());
             st.setInt(3, avaliacao.getNota()); // MUDANÇA: setInt para a nota
             st.setString(4, avaliacao.getComentario());
@@ -43,9 +43,9 @@ public class AvaliacaoDaoJDBC implements AvaliacaoDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "UPDATE avaliacoes SET id_usuario = ?, id_filme = ?, nota = ?, comentario = ? WHERE id = ?"
+                    "UPDATE avaliacoes SET nome_avaliador = ?, id_filme = ?, nota = ?, comentario = ? WHERE id = ?"
             );
-            st.setInt(1, avaliacao.getIdUsuario());
+            st.setString(1, avaliacao.getNomeAvaliador());
             st.setInt(2, avaliacao.getIdFilme());
             st.setInt(3, avaliacao.getNota()); // MUDANÇA: setInt para a nota
             st.setString(4, avaliacao.getComentario());
@@ -117,7 +117,7 @@ public class AvaliacaoDaoJDBC implements AvaliacaoDao {
     private Avaliacao instantiateAvaliacao(ResultSet rs) throws SQLException {
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setId(rs.getInt("id"));
-        avaliacao.setIdUsuario(rs.getInt("id_usuario"));
+        avaliacao.setNomeAvaliador(rs.getString("nome_avaliador"));
         avaliacao.setIdFilme(rs.getInt("id_filme"));
         avaliacao.setNota(rs.getInt("nota"));
         avaliacao.setComentario(rs.getString("comentario"));

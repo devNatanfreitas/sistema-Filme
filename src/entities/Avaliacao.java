@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Avaliacao implements Serializable {
     private int id;
-    private int idUsuario;
+    private String nomeAvaliador;
     private int idFilme;
     private int nota; // MUDANÇA: de String para int
     private String comentario;
@@ -12,15 +12,15 @@ public class Avaliacao implements Serializable {
     public Avaliacao() {}
 
 
-    public Avaliacao(int id, int idUsuario, int idFilme, int nota, String comentario) {
+    public Avaliacao(int id, String nomeAvaliador, int idFilme, int nota, String comentario) {
         this.id = id;
-        this.idUsuario = idUsuario;
+        this.nomeAvaliador = nomeAvaliador;
         this.idFilme = idFilme;
         this.nota = nota;
         this.comentario = comentario;
     }
-    public Avaliacao(int idUsuario, int idFilme, int nota, String comentario) {
-        this.idUsuario = idUsuario;
+    public Avaliacao(String nomeAvaliador, int idFilme, int nota, String comentario) {
+        this.nomeAvaliador = nomeAvaliador;
         this.idFilme = idFilme;
         this.nota = nota;
         this.comentario = comentario;
@@ -28,8 +28,8 @@ public class Avaliacao implements Serializable {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    public int getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+    public String getNomeAvaliador() { return nomeAvaliador; }
+    public void setNomeAvaliador(String nomeAvaliador) { this.nomeAvaliador = nomeAvaliador; }
     public int getIdFilme() { return idFilme; }
     public void setIdFilme(int idFilme) { this.idFilme = idFilme; }
     public String getComentario() { return comentario; }
@@ -41,6 +41,6 @@ public class Avaliacao implements Serializable {
 
     @Override
     public String toString() {
-        return "Nota: " + nota + " | " + comentario; // toString mais descritivo
+        return "Avaliador: " + nomeAvaliador + " | Nota: " + nota + " | " + comentario;
     }
 }

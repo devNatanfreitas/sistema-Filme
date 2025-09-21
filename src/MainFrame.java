@@ -43,7 +43,7 @@ public class MainFrame extends JFrame {
     private JButton generoEditButton, generoDeleteButton;
 
     private JComboBox<Filme> filmeSelectorAvaliacao;
-    private JTextField avaliacaoUsuarioIdField, avaliacaoNotaField;
+    private JTextField avaliacaoNomeAvaliadorField, avaliacaoNotaField;
     private JTextArea avaliacaoComentarioArea;
     private JTable avaliacaoTable;
     private DefaultTableModel avaliacaoTableModel;
@@ -415,11 +415,11 @@ public class MainFrame extends JFrame {
     // ==========================================================
     private JPanel createAvaliacaoPanel() {
         JPanel mainPanel = createStandardPanel();
-        avaliacaoTableModel = createTableModel(new String[]{"ID", "Filme", "Usuário ID", "Nota", "Comentário"});
+        avaliacaoTableModel = createTableModel(new String[]{"ID", "Filme", "Avaliador", "Nota", "Comentário"});
         avaliacaoTable = new JTable(avaliacaoTableModel);
         setupTable(avaliacaoTable);
         hideTableColumn(avaliacaoTable, 0);
-        avaliacaoTable.getColumnModel().getColumn(2).setPreferredWidth(50); // Usuário ID
+        avaliacaoTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Avaliador
         avaliacaoTable.getColumnModel().getColumn(3).setPreferredWidth(40); // Nota
         avaliacaoTable.getColumnModel().getColumn(4).setPreferredWidth(350); // Comentário
         mainPanel.add(new JScrollPane(avaliacaoTable), BorderLayout.CENTER);
@@ -429,10 +429,10 @@ public class MainFrame extends JFrame {
 
         JPanel fieldsPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         filmeSelectorAvaliacao = new JComboBox<>();
-        avaliacaoUsuarioIdField = new JTextField("1");
+        avaliacaoNomeAvaliadorField = new JTextField();
         avaliacaoNotaField = new JTextField();
         fieldsPanel.add(new JLabel("Selecione o Filme:")); fieldsPanel.add(filmeSelectorAvaliacao);
-        fieldsPanel.add(new JLabel("ID do Usuário (simulado):")); fieldsPanel.add(avaliacaoUsuarioIdField);
+        fieldsPanel.add(new JLabel("Nome do Avaliador:")); fieldsPanel.add(avaliacaoNomeAvaliadorField);
         fieldsPanel.add(new JLabel("Nota (0 a 10):")); fieldsPanel.add(avaliacaoNotaField);
         formPanel.add(fieldsPanel, BorderLayout.NORTH);
 
@@ -456,7 +456,7 @@ public class MainFrame extends JFrame {
             avaliacaoTableModel.setRowCount(0);
             for (Avaliacao a : avaliacaoDao.findAll()) {
                 Filme f = filmeDao.findById(a.getIdFilme());
-                avaliacaoTableModel.addRow(new Object[]{a.getId(), f != null ? f.toString() : "N/A", a.getIdUsuario(), a.getNota(), a.getComentario()});
+                avaliacaoTableModel.addRow(new Object[]{a.getId(), f != null ? f.toString() : "N/A", a.getNomeAvaliador(), a.getNota(), a.getComentario()});
             }
         } catch (Exception ex) { showError("Erro ao carregar avaliações: " + ex.getMessage()); }
     }
@@ -464,17 +464,21 @@ public class MainFrame extends JFrame {
     private void addAvaliacao() {
         try {
             Filme f = (Filme) filmeSelectorAvaliacao.getSelectedItem();
-            int uid = Integer.parseInt(avaliacaoUsuarioIdField.getText());
+            String nomeAvaliador = avaliacaoNomeAvaliadorField.getText().trim();
             int nota = Integer.parseInt(avaliacaoNotaField.getText());
-            if (f == null || nota < 0 || nota > 10) { showError("Selecione um filme e insira uma nota de 0 a 10."); return; }
+            if (f == null || nomeAvaliador.isEmpty() || nota < 0 || nota > 10) { 
+                showError("Selecione um filme, insira o nome do avaliador e uma nota de 0 a 10."); 
+                return; 
+            }
 
-            avaliacaoDao.insert(new Avaliacao(uid, f.getId(), nota, avaliacaoComentarioArea.getText()));
+            avaliacaoDao.insert(new Avaliacao(nomeAvaliador, f.getId(), nota, avaliacaoComentarioArea.getText()));
             showMessage("Avaliação adicionada com sucesso!");
+            avaliacaoNomeAvaliadorField.setText("");
             avaliacaoNotaField.setText("");
             avaliacaoComentarioArea.setText("");
             loadAllData();
         } catch (NumberFormatException ex) {
-            showError("ID do usuário e Nota devem ser números válidos.");
+            showError("A nota deve ser um número válido.");
         } catch (Exception ex) {
             showError("Erro ao adicionar avaliação: " + ex.getMessage());
         }
@@ -484,20 +488,24 @@ public class MainFrame extends JFrame {
         getSelectedEntity(avaliacaoTable, avaliacaoDao::findById, avaliacao -> {
             try {
                 JComboBox<Filme> filmeSelector = createFilmeComboBoxForEdit(avaliacao.getIdFilme());
-                JTextField uid = new JTextField(String.valueOf(avaliacao.getIdUsuario()));
+                JTextField nomeAvaliador = new JTextField(avaliacao.getNomeAvaliador());
                 JTextField nota = new JTextField(String.valueOf(avaliacao.getNota()));
                 JTextArea comentario = new JTextArea(avaliacao.getComentario(), 5, 30);
 
-                final JComponent[] inputs = {new JLabel("Filme:"), filmeSelector, new JLabel("ID do Usuário:"), uid, new JLabel("Nota (0 a 10):"), nota, new JLabel("Comentário:"), new JScrollPane(comentario)};
+                final JComponent[] inputs = {new JLabel("Filme:"), filmeSelector, new JLabel("Nome do Avaliador:"), nomeAvaliador, new JLabel("Nota (0 a 10):"), nota, new JLabel("Comentário:"), new JScrollPane(comentario)};
 
                 if (JOptionPane.showConfirmDialog(this, inputs, "Editar Avaliação", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
                     Filme f = (Filme) filmeSelector.getSelectedItem();
+                    String nomeAvaliadorText = nomeAvaliador.getText().trim();
                     int newNota = Integer.parseInt(nota.getText());
 
-                    if (f == null || newNota < 0 || newNota > 10) { showError("Dados inválidos. Selecione um filme e insira uma nota de 0 a 10."); return; }
+                    if (f == null || nomeAvaliadorText.isEmpty() || newNota < 0 || newNota > 10) { 
+                        showError("Dados inválidos. Selecione um filme, insira o nome do avaliador e uma nota de 0 a 10."); 
+                        return; 
+                    }
 
                     avaliacao.setIdFilme(f.getId());
-                    avaliacao.setIdUsuario(Integer.parseInt(uid.getText()));
+                    avaliacao.setNomeAvaliador(nomeAvaliadorText);
                     avaliacao.setNota(newNota);
                     avaliacao.setComentario(comentario.getText());
                     avaliacaoDao.update(avaliacao);
@@ -506,7 +514,7 @@ public class MainFrame extends JFrame {
                     loadAllData();
                 }
             } catch (NumberFormatException ex) {
-                showError("ID do usuário e Nota devem ser números válidos.");
+                showError("A nota deve ser um número válido.");
             }
         });
     }

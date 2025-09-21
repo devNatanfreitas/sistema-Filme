@@ -1,8 +1,6 @@
 package entities.dao;
 
 import entities.Diretor;
-import entities.Filme;
-
 import java.util.List;
 
 public interface DiretorDao {
@@ -12,3 +10,4 @@ public interface DiretorDao {
     Diretor findById(Integer id);
     List<Diretor> findAll();
 }
+ 

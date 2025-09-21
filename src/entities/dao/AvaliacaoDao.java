@@ -1,7 +1,6 @@
 package entities.dao;
 
 import entities.Avaliacao;
-
 import java.util.List;
 
 public interface AvaliacaoDao {

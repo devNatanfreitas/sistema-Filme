@@ -1,7 +1,6 @@
 package entities.dao;
 
 import entities.Genero;
-
 import java.util.List;
 
 public interface GeneroDao {
